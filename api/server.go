@@ -13,9 +13,9 @@ func NewRouter(router *gin.Engine) {
 	{
 		v1.POST("/login", h.login)
 
-		v1.GET("/*path", h.getList)
-		v1.POST("/*path", h.upload)
-		v1.DELETE("/*path", h.delete)
+		v1.GET("/f/*path", h.getList)
+		v1.POST("/f/*path", h.upload)
+		v1.DELETE("/f/*path", h.delete)
 	}
 }
 
