@@ -9,7 +9,7 @@ dev_job:
   tags:
     - docker
   script:
-    - docker build -t reg.paradise-soft.com.tw:5000/fileserver-api .
+    - docker build -t reg.paradise-soft.com.tw:5000/fileserver-api:latest .
     - docker push reg.paradise-soft.com.tw:5000/fileserver-api:latest
 
 
@@ -21,7 +21,7 @@ uat_job:
   tags:
     - docker
   script:
-    - docker build -t reg.paradise-soft.com.tw:5000/fileserver-api .
+    - docker build -t reg.paradise-soft.com.tw:5000/fileserver-api:uat .
     - docker push reg.paradise-soft.com.tw:5000/fileserver-api:uat
 
 tags_job:
