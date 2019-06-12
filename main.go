@@ -3,6 +3,7 @@ package main
 import (
 	"fileserver/api"
 	"fileserver/config"
+	"fileserver/db"
 	"fileserver/fs"
 
 	"github.com/gin-contrib/cors"
@@ -10,10 +11,11 @@ import (
 )
 
 func main() {
-	configuration := config.New()
+	cfg := config.New()
 
 	router := gin.Default()
-	fs.Init(configuration.Root)
+	db.New(cfg.DB)
+	fs.Init(cfg.Root)
 
 	router.Use(cors.Default())
 	router.Use(gin.Logger())

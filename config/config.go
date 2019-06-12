@@ -6,7 +6,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func New() (configuration *Config) {
+var configuration *Config
+
+func New() *Config {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yaml")
@@ -23,5 +25,9 @@ func New() (configuration *Config) {
 		log.Fatalf("Unable to decode config into struct, %v", err)
 	}
 
-	return
+	return configuration
+}
+
+func GetInstance() *Config {
+	return configuration
 }

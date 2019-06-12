@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fileserver/types"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -16,7 +17,6 @@ func (h *Handler) getList(c *gin.Context) {
 	isFile := fileSystem.IsFile(path)
 	switch op := c.Query("op"); op {
 	case "download":
-
 		if isFile {
 			fullpath := filepath.Join(fileSystem.Root, path)
 			c.FileAttachment(fullpath, filepath.Base(path))
@@ -38,7 +38,14 @@ func (h *Handler) getList(c *gin.Context) {
 			abortWithError(c, http.StatusBadRequest, err.Error())
 			return
 		}
-		c.JSON(http.StatusOK, lrs)
+
+		res := types.Response{
+			Status:  0,
+			Message: "get file list",
+			Data:    lrs,
+		}
+
+		c.JSON(http.StatusOK, res)
 
 	default:
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -48,9 +55,9 @@ func (h *Handler) getList(c *gin.Context) {
 func (h *Handler) upload(c *gin.Context) {
 	fileSystem := fs.GetInstance()
 	path := c.Param("path")
-
 	file, _ := c.FormFile("file")
 
+	fjis := make([]*fs.FileJSONInfo, 0)
 	uploadInfo := &fs.UploadInfo{
 		Path: path,
 	}
@@ -67,8 +74,22 @@ func (h *Handler) upload(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
+	uploadFilePath := filepath.Join(path, file.Filename)
+	fji, err := fileSystem.Info(uploadFilePath)
+	if err != nil {
+		abortWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	c.String(http.StatusOK, "Uploaded...")
+	fjis = append(fjis, fji)
+
+	res := types.Response{
+		Status:  1,
+		Message: "upload success",
+		Data:    fjis,
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 func (h *Handler) delete(c *gin.Context) {
@@ -91,5 +112,10 @@ func (h *Handler) delete(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "Deleted...")
+	res := types.Response{
+		Status:  1,
+		Message: "delete success",
+	}
+
+	c.JSON(http.StatusOK, res)
 }

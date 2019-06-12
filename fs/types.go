@@ -3,6 +3,7 @@ package fs
 import (
 	"mime/multipart"
 	"os"
+	"time"
 )
 
 type ApkInfo struct {
@@ -20,11 +21,11 @@ type IndexFileItem struct {
 }
 
 type HTTPFileInfo struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	Type    string `json:"type"`
-	Size    int64  `json:"size"`
-	ModTime int64  `json:"mtime"`
+	Name    string    `json:"name"`
+	Path    string    `json:"path"`
+	Type    string    `json:"type"`
+	Size    int64     `json:"size"`
+	ModTime time.Time `json:"mtime"`
 }
 
 type FileJSONInfo struct {
@@ -32,7 +33,7 @@ type FileJSONInfo struct {
 	Type    string      `json:"type"`
 	Size    int64       `json:"size"`
 	Path    string      `json:"path"`
-	ModTime int64       `json:"mtime"`
+	ModTime time.Time   `json:"mtime"`
 	Extra   interface{} `json:"extra,omitempty"`
 }
 

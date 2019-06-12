@@ -4,6 +4,7 @@ require (
 	github.com/armon/go-metrics v0.0.0-20190430140413-ec5e00d3c878 // indirect
 	github.com/boltdb/bolt v1.3.1
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-yaml/yaml v2.1.0+incompatible
@@ -22,4 +23,5 @@ require (
 	github.com/tidwall/raft v1.0.0
 	github.com/tidwall/rtree v0.0.0-20180113144539-6cd427091e0e // indirect
 	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 )

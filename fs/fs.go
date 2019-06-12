@@ -96,10 +96,8 @@ func (s *fileSystem) UploadOrMkdir(data *UploadInfo) (reuslt bool, err error) {
 			file.Close()
 		}()
 	}
-	_, err = os.Stat(dirpath)
-	if err != nil {
-		return false, errors.New("directory exist")
-	}
+	info, err := os.Stat(dirpath)
+
 	if os.IsNotExist(err) {
 		if err = os.MkdirAll(dirpath, os.ModePerm); err != nil {
 			log.Errorf("Create directory: %s", err)
@@ -108,6 +106,9 @@ func (s *fileSystem) UploadOrMkdir(data *UploadInfo) (reuslt bool, err error) {
 	}
 
 	if file == nil { // only mkdir
+		if info != nil {
+			return false, errors.New("directory exist")
+		}
 		return true, nil
 	}
 
@@ -146,8 +147,8 @@ func (s *fileSystem) Info(path string) (fji *FileJSONInfo, err error) {
 	fji = &FileJSONInfo{
 		Name:    fi.Name(),
 		Size:    fi.Size(),
-		Path:    path,
-		ModTime: fi.ModTime().UnixNano() / 1e6,
+		Path:    relPath,
+		ModTime: fi.ModTime().UTC(),
 	}
 	ext := filepath.Ext(path)
 	switch ext {
@@ -197,14 +198,7 @@ func (s *fileSystem) JSONList(requestPath string, search string) (lrs []HTTPFile
 		lr := HTTPFileInfo{
 			Name:    info.Name(),
 			Path:    path,
-			ModTime: info.ModTime().UnixNano() / 1e6,
-		}
-		if search != "" {
-			name, err := filepath.Rel(requestPath, path)
-			if err != nil {
-				log.Errorf(requestPath, path, err)
-			}
-			lr.Name = filepath.ToSlash(name) // fix for windows
+			ModTime: info.ModTime().UTC(),
 		}
 		if info.IsDir() {
 			name := deepPath(localPath, info.Name())
