@@ -79,5 +79,3 @@ func JWTAuth() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-func getBearer() {}

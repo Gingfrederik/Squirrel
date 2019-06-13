@@ -15,14 +15,11 @@ func (h *Handler) getList(c *gin.Context) {
 	fileSystem := fs.GetInstance()
 	path := strings.TrimPrefix(c.Param("path"), "/")
 	isFile := fileSystem.IsFile(path)
-	switch op := c.Query("op"); op {
-	case "download":
-		if isFile {
-			fullpath := filepath.Join(fileSystem.Root, path)
-			c.FileAttachment(fullpath, filepath.Base(path))
-			return
-		}
-	case "":
+
+	op := c.DefaultQuery("op", "info")
+
+	switch op {
+	case "info":
 		if isFile {
 			fji, err := fileSystem.Info(path)
 			if err != nil {
@@ -46,7 +43,12 @@ func (h *Handler) getList(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, res)
-
+	case "download":
+		if isFile {
+			fullpath := filepath.Join(fileSystem.Root, path)
+			c.FileAttachment(fullpath, filepath.Base(path))
+			return
+		}
 	default:
 		c.AbortWithStatus(http.StatusBadRequest)
 	}

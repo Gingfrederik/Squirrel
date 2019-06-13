@@ -25,8 +25,11 @@ func NewRouter(router *gin.Engine) {
 
 	v1 := router.Group("/v1")
 	{
-		v1.POST("/user/login", h.login)
-		v1.POST("/user/register", h.register)
+		uR := v1.Group("/user")
+		{
+			uR.POST("/login", h.login)
+			uR.POST("/register", h.register)
+		}
 
 		fsR := v1.Group("/fs")
 		fsR.Use(jwt.JWTAuth())
