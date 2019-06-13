@@ -97,17 +97,13 @@ func (h *Handler) upload(c *gin.Context) {
 func (h *Handler) delete(c *gin.Context) {
 	fileSystem := fs.GetInstance()
 	path := c.Param("path")
-	isFile := fileSystem.IsFile(path)
-	if !isFile {
-		abortWithError(c, http.StatusBadRequest, "can only delete file")
-		return
-	}
 
 	_, err := fileSystem.Info(path)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	err = fileSystem.Delete(path)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())

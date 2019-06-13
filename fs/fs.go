@@ -71,8 +71,7 @@ func (s *fileSystem) Mkdir(path string) (result bool, err error) {
 }
 
 func (s *fileSystem) Delete(path string) (err error) {
-	// only can delete file now
-	err = os.Remove(filepath.Join(s.Root, path))
+	err = os.RemoveAll(filepath.Join(s.Root, path))
 	if err != nil {
 		pathErr, ok := err.(*os.PathError)
 		if ok {
