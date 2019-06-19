@@ -63,6 +63,24 @@ func (h *Handler) register(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+func (h *Handler) getAllUser(c *gin.Context) {
+	userM := user.GetInstance()
+
+	users, err := userM.GetAllUser()
+	if err != nil {
+		abortWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	res := types.Response{
+		Status:  0,
+		Message: "get all users",
+		Data:    users,
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
 func generateJWTToken(user *types.User, secretKey string) (token string, err error) {
 	nowTime := time.Now()
 	jwtToken := jwt.New(jwt.SigningMethodHS256)

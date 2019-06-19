@@ -79,3 +79,10 @@ func (u *user) Login(user *types.User) (dbUser *types.User, err error) {
 
 	return
 }
+
+func (u *user) GetAllUser() (user []*types.UserNoPass, err error) {
+	dbAgent := db.GetInstance()
+	user, err = dbAgent.GetAllUser()
+
+	return
+}

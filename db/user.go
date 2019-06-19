@@ -59,12 +59,12 @@ func (db *db) GetUserByID(id snowflake.ID) (user *types.User, err error) {
 	return
 }
 
-func (db *db) GetAllUser() (user []*types.User, err error) {
+func (db *db) GetAllUser() (user []*types.UserNoPass, err error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(userBucket))
 
 		b.ForEach(func(k, v []byte) error {
-			u, err := decodeToUser(v)
+			u, err := decodeToUserNoPass(v)
 			if err != nil {
 				return err
 			}
@@ -97,6 +97,14 @@ func (db *db) GetIDByName(name string) (id snowflake.ID, err error) {
 }
 
 func decodeToUser(data []byte) (user *types.User, err error) {
+	err = json.Unmarshal(data, &user)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func decodeToUserNoPass(data []byte) (user *types.UserNoPass, err error) {
 	err = json.Unmarshal(data, &user)
 	if err != nil {
 		return nil, err
