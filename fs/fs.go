@@ -24,7 +24,7 @@ type fileSystem struct {
 var instance *fileSystem
 var once sync.Once
 
-func Init(root string) {
+func New(root string) {
 	if root == "" {
 		root = "./"
 	}
@@ -164,7 +164,7 @@ func (s *fileSystem) Info(path string) (fji *FileJSONInfo, err error) {
 	return
 }
 
-func (s *fileSystem) JSONList(requestPath string, search string) (lrs []HTTPFileInfo, err error) {
+func (s *fileSystem) JSONList(requestPath string, search string, deep bool) (lrs []HTTPFileInfo, err error) {
 	localPath := filepath.Join(s.Root, requestPath)
 
 	// path string -> info os.FileInfo
@@ -200,7 +200,10 @@ func (s *fileSystem) JSONList(requestPath string, search string) (lrs []HTTPFile
 			ModTime: info.ModTime().UTC(),
 		}
 		if info.IsDir() {
-			name := deepPath(localPath, info.Name())
+			name := info.Name()
+			if deep {
+				name = deepPath(localPath, info.Name())
+			}
 			lr.Name = name
 			lr.Path = filepath.Join(filepath.Dir(path), name)
 			lr.Type = "dir"

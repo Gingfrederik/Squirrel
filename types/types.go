@@ -6,6 +6,12 @@ import (
 	"github.com/bwmarrin/snowflake"
 )
 
+type Response struct {
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
 type User struct {
 	ID        snowflake.ID `json:"id"`
 	Name      string       `json:"name"`
@@ -19,10 +25,4 @@ type Token struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIN   int    `json:"expires_in"`
-}
-
-type Response struct {
-	Status  int         `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
 }

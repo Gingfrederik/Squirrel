@@ -2,42 +2,30 @@ package api
 
 import (
 	"fileserver/config"
-	"fileserver/db"
 	"fileserver/types"
+	"fileserver/user"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) login(c *gin.Context) {
 	cfg := config.GetInstance()
-	user := &types.User{}
-	err := c.BindJSON(user)
-	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	dbAgent := db.GetInstance()
-	id, err := dbAgent.GetIDByName(user.Name)
+	userM := user.GetInstance()
+
+	userData := &types.User{}
+	err := c.BindJSON(userData)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	dbUser, err := dbAgent.GetUserByID(id)
+	dbUser, err := userM.Login(userData)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
-	if err != nil {
-		abortWithError(c, http.StatusForbidden, err.Error())
 		return
 	}
 
@@ -58,34 +46,15 @@ func (h *Handler) login(c *gin.Context) {
 }
 
 func (h *Handler) register(c *gin.Context) {
-	dbAgent := db.GetInstance()
-
-	user := &types.User{}
-	err := c.BindJSON(user)
+	userM := user.GetInstance()
+	userData := &types.User{}
+	err := c.BindJSON(userData)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	_, err = dbAgent.GetIDByName(user.Name)
-	if err != db.ErrKeyNotExists {
-		abortWithError(c, http.StatusBadRequest, "name exists")
-		return
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	user.ID = h.genID.Generate()
-	user.Password = string(hash)
-	user.Locked = false
-	user.CreatedAt = time.Now().UTC()
-	user.UpdateAt = time.Now().UTC()
-
-	err = dbAgent.AddOrUpdateUser(user)
+	err = userM.Register(userData)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return

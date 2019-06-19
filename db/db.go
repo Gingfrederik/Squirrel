@@ -2,7 +2,6 @@ package db
 
 import (
 	"os"
-	"sync"
 
 	"github.com/boltdb/bolt"
 )
@@ -17,17 +16,13 @@ type db struct {
 }
 
 var instance *db
-var once sync.Once
 
 func New(path string) {
-	once.Do(func() {
-		instance = &db{}
+	instance = &db{}
 
-		if err := instance.Open(path, 0600); err != nil {
-			panic(err)
-		}
-
-	})
+	if err := instance.Open(path, 0600); err != nil {
+		panic(err)
+	}
 }
 
 func GetInstance() *db {

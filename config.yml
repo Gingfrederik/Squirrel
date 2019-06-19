@@ -1,0 +1,8 @@
+root: "./test"
+db: "./test.db"
+secretkey: "16E40D1AB1286C4AE9AEBE20E76A4D2414085B779B4C457E77F1E9CF430D6402"
+casbin:
+  model: "./rbac_model.conf"
+admin:
+  username: "root"
+  password: "1234"

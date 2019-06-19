@@ -1,27 +1,20 @@
 package api
 
 import (
+	"fileserver/auth"
+	authMiddleware "fileserver/middleware/auth"
 	"fileserver/middleware/jwt"
 	"fileserver/types"
 
-	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
-	genID *snowflake.Node
-}
+type Handler struct{}
 
 func NewRouter(router *gin.Engine) {
-	// Create a new Node with a Node number of 1
-	node, err := snowflake.NewNode(1)
-	if err != nil {
-		panic(err)
-	}
+	authM := auth.GetInstance()
 
-	h := &Handler{
-		genID: node,
-	}
+	h := &Handler{}
 
 	v1 := router.Group("/v1")
 	{
@@ -33,10 +26,26 @@ func NewRouter(router *gin.Engine) {
 
 		fsR := v1.Group("/fs")
 		fsR.Use(jwt.JWTAuth())
+		fsR.Use(authMiddleware.NewAuthorizer(authM.Enforcer))
 		{
 			fsR.GET("/*path", h.getList)
 			fsR.POST("/*path", h.upload)
 			fsR.DELETE("/*path", h.delete)
+		}
+
+		acR := v1.Group("/ac")
+		acR.Use(jwt.JWTAuth())
+		acR.Use(authMiddleware.NewAuthorizer(authM.Enforcer))
+		{
+			acR.GET("/policy", h.getAllPolicy)
+			acR.POST("/policy", h.addPolicy)
+			acR.DELETE("/policy", h.delPolicy)
+
+			acR.GET("/role", h.getAllRole)
+
+			acR.GET("/role/user", h.getAllUserRole)
+			acR.POST("/role/user", h.addUserRole)
+			acR.DELETE("/role/user", h.delUserRole)
 		}
 	}
 }

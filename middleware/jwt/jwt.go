@@ -17,12 +17,7 @@ func JWTAuth() gin.HandlerFunc {
 		r := c.Request
 		reqToken := r.Header.Get("Authorization")
 		if reqToken == "" {
-			res := types.Response{
-				Status:  -1,
-				Message: "unauthorization",
-			}
-			c.JSON(http.StatusForbidden, res)
-			c.Abort()
+			c.Next()
 			return
 		}
 		splitToken := strings.Split(reqToken, "Bearer ")

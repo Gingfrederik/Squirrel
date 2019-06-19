@@ -4,6 +4,7 @@ import (
 	"fileserver/types"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 func (h *Handler) getList(c *gin.Context) {
 	fileSystem := fs.GetInstance()
 	path := strings.TrimPrefix(c.Param("path"), "/")
+
 	isFile := fileSystem.IsFile(path)
 
 	op := c.DefaultQuery("op", "info")
@@ -30,7 +32,10 @@ func (h *Handler) getList(c *gin.Context) {
 			return
 		}
 		search := c.Query("search")
-		lrs, err := fileSystem.JSONList(path, search)
+		deepStr := c.DefaultQuery("deep", "true")
+		deep, _ := strconv.ParseBool(deepStr)
+
+		lrs, err := fileSystem.JSONList(path, search, deep)
 		if err != nil {
 			abortWithError(c, http.StatusBadRequest, err.Error())
 			return
