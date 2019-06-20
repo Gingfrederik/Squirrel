@@ -1,8 +1,8 @@
 package types
 
 type RoleUser struct {
-	Role  string
-	Users []string
+	Role  string   `json:"role"`
+	Users []string `json:"users"`
 }
 
 type Policy struct {
