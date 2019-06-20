@@ -18,7 +18,10 @@ func (h *Handler) getList(c *gin.Context) {
 
 	isFile := fileSystem.IsFile(path)
 
-	op := c.DefaultQuery("op", "info")
+	op := "info"
+	if isFile {
+		op = c.DefaultQuery("op", "download")
+	}
 
 	switch op {
 	case "info":
