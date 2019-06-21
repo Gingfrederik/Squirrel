@@ -3,6 +3,7 @@ package api
 import (
 	"fileserver/auth"
 	"fileserver/types"
+	"fileserver/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -82,12 +83,21 @@ func (h *Handler) getAllRole(c *gin.Context) {
 
 func (h *Handler) getAllUserRole(c *gin.Context) {
 	authM := auth.GetInstance()
+	userM := user.GetInstance()
 	roles := authM.GetAllRoles()
 
-	data := []*types.RoleUser{}
+	data := []*types.RoleAllUser{}
 	for _, role := range roles {
-		users := authM.GetUsersForRole(role)
-		roleUser := &types.RoleUser{
+		usersData := authM.GetUsersForRole(role)
+		users := []*types.User{}
+		for _, userData := range usersData {
+			u, err := userM.GetUser(userData)
+			if err != nil {
+				abortWithError(c, http.StatusInternalServerError, err.Error())
+			}
+			users = append(users, u)
+		}
+		roleUser := &types.RoleAllUser{
 			Role:  role,
 			Users: users,
 		}

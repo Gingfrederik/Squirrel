@@ -86,3 +86,19 @@ func (u *user) GetAllUser() (user []*types.UserNoPass, err error) {
 
 	return
 }
+
+func (u *user) GetUser(id string) (user *types.User, err error) {
+	dbAgent := db.GetInstance()
+	sID, err := snowflake.ParseString(id)
+	if err != nil {
+		return
+	}
+	user, err = dbAgent.GetUserByID(sID)
+	if err != nil {
+		return
+	}
+
+	user.Password = ""
+
+	return
+}

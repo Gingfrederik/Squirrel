@@ -15,7 +15,7 @@ type Response struct {
 type User struct {
 	ID        snowflake.ID `json:"id"`
 	Name      string       `json:"name"`
-	Password  string       `json:"password"`
+	Password  string       `json:"password,omitempty"`
 	Locked    bool         `json:"locked"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdateAt  time.Time    `json:"update_at"`
