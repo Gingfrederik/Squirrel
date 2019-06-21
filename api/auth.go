@@ -3,6 +3,7 @@ package api
 import (
 	"fileserver/auth"
 	"fileserver/types"
+	"fileserver/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func (h *Handler) addPolicy(c *gin.Context) {
 	err := c.BindJSON(&policy)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	result := authM.AddPermissionForUser(policy.Role, policy.Path, policy.Method)
@@ -51,6 +53,7 @@ func (h *Handler) delPolicy(c *gin.Context) {
 	err := c.BindJSON(&policy)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	result := authM.DeletePermissionForUser(policy.Role, policy.Path, policy.Method)
@@ -106,11 +109,19 @@ func (h *Handler) getAllUserRole(c *gin.Context) {
 
 func (h *Handler) addUserRole(c *gin.Context) {
 	authM := auth.GetInstance()
+	userM := user.GetInstance()
 
 	roleUser := &types.RoleUser{}
 	err := c.BindJSON(&roleUser)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	_, err = userM.GetUser(roleUser.Users[0])
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	result := authM.AddRoleForUser(roleUser.Users[0], roleUser.Role)
@@ -129,11 +140,32 @@ func (h *Handler) addUserRole(c *gin.Context) {
 
 func (h *Handler) delUserRole(c *gin.Context) {
 	authM := auth.GetInstance()
+	userM := user.GetInstance()
 
 	roleUser := &types.RoleUser{}
 	err := c.BindJSON(&roleUser)
 	if err != nil {
 		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	roles := authM.GetAllRoles()
+	roleCheck := false
+	for _, role := range roles {
+		if role == roleUser.Role {
+			roleCheck = true
+		}
+	}
+
+	if !roleCheck {
+		abortWithError(c, http.StatusBadRequest, "role not exits")
+		return
+	}
+
+	_, err = userM.GetUser(roleUser.Users[0])
+	if err != nil {
+		abortWithError(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	result := authM.DeleteRoleForUser(roleUser.Users[0], roleUser.Role)

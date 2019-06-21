@@ -59,6 +59,7 @@ func (h *Handler) getList(c *gin.Context) {
 		}
 	default:
 		c.AbortWithStatus(http.StatusBadRequest)
+		return
 	}
 }
 
@@ -114,7 +115,7 @@ func (h *Handler) delete(c *gin.Context) {
 
 	err = fileSystem.Delete(path)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 

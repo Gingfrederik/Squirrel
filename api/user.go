@@ -56,7 +56,7 @@ func (h *Handler) register(c *gin.Context) {
 
 	err = userM.Register(userData)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
