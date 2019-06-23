@@ -72,8 +72,12 @@ func (h *Handler) upload(c *gin.Context) {
 	uploadInfo := &fs.UploadInfo{
 		Path: path,
 	}
+
+	uploadFilePath := path
+
 	if file != nil {
 		uploadInfo.FileHeader = file
+		uploadFilePath = filepath.Join(path, file.Filename)
 	}
 
 	result, err := fileSystem.UploadOrMkdir(uploadInfo)
@@ -85,7 +89,7 @@ func (h *Handler) upload(c *gin.Context) {
 		abortWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	uploadFilePath := filepath.Join(path, file.Filename)
+
 	fji, err := fileSystem.Info(uploadFilePath)
 	if err != nil {
 		abortWithError(c, http.StatusInternalServerError, err.Error())
