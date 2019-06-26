@@ -51,10 +51,10 @@ func NewRouter(router *gin.Engine) {
 	}
 }
 
-func abortWithError(c *gin.Context, code int, message string) {
+func abortWithError(c *gin.Context, code int, err error) {
 	res := types.Response{
 		Status:  -1,
-		Message: message,
+		Message: err.Error(),
 	}
 	c.AbortWithStatusJSON(code, res)
 }

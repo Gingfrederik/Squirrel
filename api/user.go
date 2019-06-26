@@ -19,19 +19,19 @@ func (h *Handler) login(c *gin.Context) {
 	userData := &types.User{}
 	err := c.BindJSON(userData)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	dbUser, err := userM.Login(userData)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	jwtToken, err := generateJWTToken(dbUser, cfg.SecretKey)
 	if err != nil {
-		abortWithError(c, http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 	expiresIn := time.Hour * time.Duration(1)
@@ -50,13 +50,13 @@ func (h *Handler) register(c *gin.Context) {
 	userData := &types.User{}
 	err := c.BindJSON(userData)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	err = userM.Register(userData)
 	if err != nil {
-		abortWithError(c, http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h *Handler) getAllUser(c *gin.Context) {
 
 	users, err := userM.GetAllUser()
 	if err != nil {
-		abortWithError(c, http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 

@@ -28,7 +28,7 @@ func (h *Handler) getList(c *gin.Context) {
 		if isFile {
 			fji, err := fileSystem.Info(path)
 			if err != nil {
-				abortWithError(c, http.StatusBadRequest, err.Error())
+				abortWithError(c, http.StatusBadRequest, err)
 				return
 			}
 			c.JSON(http.StatusOK, fji)
@@ -40,7 +40,7 @@ func (h *Handler) getList(c *gin.Context) {
 
 		lrs, err := fileSystem.JSONList(path, search, deep)
 		if err != nil {
-			abortWithError(c, http.StatusBadRequest, err.Error())
+			abortWithError(c, http.StatusBadRequest, err)
 			return
 		}
 
@@ -65,7 +65,7 @@ func (h *Handler) getList(c *gin.Context) {
 
 func (h *Handler) upload(c *gin.Context) {
 	fileSystem := fs.GetInstance()
-	path := c.Param("path")
+	path := strings.TrimPrefix(c.Param("path"), "/")
 	file, _ := c.FormFile("file")
 
 	fjis := make([]*fs.FileJSONInfo, 0)
@@ -82,17 +82,17 @@ func (h *Handler) upload(c *gin.Context) {
 
 	result, err := fileSystem.UploadOrMkdir(uploadInfo)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 	if !result {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	fji, err := fileSystem.Info(uploadFilePath)
 	if err != nil {
-		abortWithError(c, http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -109,17 +109,17 @@ func (h *Handler) upload(c *gin.Context) {
 
 func (h *Handler) delete(c *gin.Context) {
 	fileSystem := fs.GetInstance()
-	path := c.Param("path")
+	path := strings.TrimPrefix(c.Param("path"), "/")
 
 	_, err := fileSystem.Info(path)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	err = fileSystem.Delete(path)
 	if err != nil {
-		abortWithError(c, http.StatusInternalServerError, err.Error())
+		abortWithError(c, http.StatusInternalServerError, err)
 		return
 	}
 

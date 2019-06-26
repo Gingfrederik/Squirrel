@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fileserver/auth"
 	"fileserver/types"
 	"fileserver/user"
@@ -28,7 +29,7 @@ func (h *Handler) addPolicy(c *gin.Context) {
 	policy := &types.Policy{}
 	err := c.BindJSON(&policy)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -52,7 +53,7 @@ func (h *Handler) delPolicy(c *gin.Context) {
 	policy := &types.Policy{}
 	err := c.BindJSON(&policy)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -114,13 +115,13 @@ func (h *Handler) addUserRole(c *gin.Context) {
 	roleUser := &types.RoleUser{}
 	err := c.BindJSON(&roleUser)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	_, err = userM.GetUser(roleUser.Users[0])
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -145,7 +146,7 @@ func (h *Handler) delUserRole(c *gin.Context) {
 	roleUser := &types.RoleUser{}
 	err := c.BindJSON(&roleUser)
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -158,13 +159,13 @@ func (h *Handler) delUserRole(c *gin.Context) {
 	}
 
 	if !roleCheck {
-		abortWithError(c, http.StatusBadRequest, "role not exits")
+		abortWithError(c, http.StatusBadRequest, errors.New("role not exits"))
 		return
 	}
 
 	_, err = userM.GetUser(roleUser.Users[0])
 	if err != nil {
-		abortWithError(c, http.StatusBadRequest, err.Error())
+		abortWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
