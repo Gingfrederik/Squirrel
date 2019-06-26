@@ -2,6 +2,8 @@ package auth
 
 import (
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/casbin/casbin"
 	"github.com/dgrijalva/jwt-go"
@@ -36,6 +38,9 @@ func (a *Authorizer) CheckPermission(c *gin.Context) bool {
 	}
 	method := c.Request.Method
 	path := c.Request.URL.Path
+	if strings.HasPrefix(path, "/v1/fs") {
+		path = filepath.Join("/v1/fs", c.Param("path"))
+	}
 	return a.enforcer.Enforce(user, path, method)
 }
 
