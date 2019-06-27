@@ -1,5 +1,7 @@
 *.db
 
+__debug_bin
+
 .DS_Store
 *.[56789ao]
 *.a[56789o]
