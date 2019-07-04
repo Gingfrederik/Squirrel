@@ -54,7 +54,7 @@ func (h *Handler) getList(c *gin.Context) {
 	case "download":
 		if isFile {
 			fullpath := filepath.Join(fileSystem.Root, path)
-			c.FileAttachment(fullpath, filepath.Base(path))
+			c.File(fullpath)
 			return
 		}
 	default:
