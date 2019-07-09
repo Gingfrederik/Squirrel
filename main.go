@@ -33,5 +33,5 @@ func main() {
 
 	api.NewRouter(router)
 
-	router.Run()
+	router.Run(cfg.Port)
 }
