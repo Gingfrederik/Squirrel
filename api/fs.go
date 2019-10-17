@@ -31,7 +31,14 @@ func (h *Handler) getList(c *gin.Context) {
 				abortWithError(c, http.StatusBadRequest, err)
 				return
 			}
-			c.JSON(http.StatusOK, fji)
+
+			res := types.Response{
+				Status:  0,
+				Message: "get file info",
+				Data:    fji,
+			}
+
+			c.JSON(http.StatusOK, res)
 			return
 		}
 		search := c.Query("search")
